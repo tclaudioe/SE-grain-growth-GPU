@@ -68,17 +68,8 @@ __device__ inline double energy_diff(const int comp, vertex *vrt, const double D
         vrt->vel_grn_y = -grn_term / grad_eps;
     }
 
-    // Check stability
-    if(vrt->angles[0] + vrt->angles[1] + vrt->angles[2] <= 3*M_PI &&
-     (vrt->angles[0] <= M_PI && vrt->angles[1] <= M_PI && vrt->angles[2] <= M_PI))
-    {
-        // return the whole x or y component of velocity
-        return bnd_term + grn_term;
-    } else {
-        // We are in undesired non-convex regime
-        return bnd_term;
-    }
 
+    return bnd_term + grn_term;
 }
 
 /**
@@ -155,8 +146,8 @@ __global__ void compute_vertex_velocities(vertex* dev_vertices, int n_vertices, 
     while(tid < n_vertices) {
         vrt = &dev_vertices[tid];
         if(vrt->enabled) {
-            vrt->vel.x = -energy_diff(XCOMP, vrt, DOMAIN_BOUND) / grad_eps;
-            vrt->vel.y = -energy_diff(YCOMP, vrt, DOMAIN_BOUND) / grad_eps;
+            vrt->vel.x = -energy_diff(XCOMP, vrt, DOMAIN_BOUND);
+            vrt->vel.y = -energy_diff(YCOMP, vrt, DOMAIN_BOUND);
         }
         tid += gridDim.x * blockDim.x;
     }
