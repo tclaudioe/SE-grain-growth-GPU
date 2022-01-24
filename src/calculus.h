@@ -146,8 +146,8 @@ __global__ void compute_vertex_velocities(vertex* dev_vertices, int n_vertices, 
     while(tid < n_vertices) {
         vrt = &dev_vertices[tid];
         if(vrt->enabled) {
-            vrt->vel.x = -energy_diff(XCOMP, vrt, DOMAIN_BOUND);
-            vrt->vel.y = -energy_diff(YCOMP, vrt, DOMAIN_BOUND);
+            vrt->vel.x = -energy_diff(XCOMP, vrt, DOMAIN_BOUND)/grad_eps;
+            vrt->vel.y = -energy_diff(YCOMP, vrt, DOMAIN_BOUND)/grad_eps;
         }
         tid += gridDim.x * blockDim.x;
     }
